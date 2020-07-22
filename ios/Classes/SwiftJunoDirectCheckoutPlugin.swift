@@ -90,9 +90,16 @@ public class SwiftJunoDirectCheckoutPlugin: NSObject, FlutterPlugin {
             /* Sucesso - A variável hash conterá o hash do cartão de crédito */
             flutterResult(hash)
         } catch let error {
-            print(error)
-            /* Erro - A variável error conterá o erro ocorrido ao obter o hash */
-            flutterResult(FlutterError(code: "getHashError", message: "Não foi possível gerar o hash", details: nil))
+            if (error is DirectCheckoutError) {
+                let er = error as! DirectCheckoutError;
+                let mensagem = er.errorDescription ?? "Não foi possível gerar o hash"
+                print(mensagem)
+                flutterResult(FlutterError(code: "getHashError", message: mensagem, details: nil))
+            } else {
+                print(error)
+                /* Erro - A variável error conterá o erro ocorrido ao obter o hash */
+                flutterResult(FlutterError(code: "getHashError", message: "Não foi possível gerar o hash", details: nil))
+            }
         }
     }
   }
