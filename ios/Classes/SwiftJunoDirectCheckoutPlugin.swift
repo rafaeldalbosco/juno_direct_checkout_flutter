@@ -55,11 +55,30 @@ public class SwiftJunoDirectCheckoutPlugin: NSObject, FlutterPlugin {
           do {
             let valido = try card.validate()
             result(valido);
-          } catch {
-            result(FlutterError(code: "isValidCardDataError", message: error.localizedDescription, details: nil))
+          } catch let error {
+            if (error is DirectCheckoutError) {
+                let er = error as! DirectCheckoutError;
+                let mensagem = er.errorDescription ?? "Não foi possível validar o cartão"
+                print(mensagem)
+                result(FlutterError(code: "isValidCardDataError", message: mensagem, details: nil))
+            } else {
+                result(FlutterError(code: "isValidCardDataError", message: "Não foi possível validar o cartão", details: nil))
+            }
           }
         case "getCardType":
-          result(card.getType())
+          do {
+            let type = try card.getType()
+            result(type?.rawValue ?? "NENHUM")
+          } catch let error {
+              if (error is DirectCheckoutError) {
+                  let er = error as! DirectCheckoutError;
+                  let mensagem = er.errorDescription ?? "Não foi possível obter a bandeira do cartão"
+                  print(mensagem)
+                  result(FlutterError(code: "getCardTypeError", message: mensagem, details: nil))
+              } else {
+                  result(FlutterError(code: "getCardTypeError", message: "Não foi possível obter a bandeira do cartão", details: nil))
+              }
+          }
         default:
           result(FlutterMethodNotImplemented)
       }
