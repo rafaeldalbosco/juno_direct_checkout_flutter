@@ -27,11 +27,15 @@ public class JunoDirectCheckoutPlugin implements FlutterPlugin, MethodCallHandle
     /// when the Flutter Engine is detached from the Activity
     private MethodChannel channel;
     private Context context;
-    private final Activity activity;
+    //private final Activity activity;
 
-    private JunoDirectCheckoutPlugin(Activity activity) {
-        this.activity = activity;
+
+    public JunoDirectCheckoutPlugin() {
     }
+
+//    private JunoDirectCheckoutPlugin(Activity activity) {
+//        this.activity = activity;
+//    }
 
     @Override
     public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
@@ -51,8 +55,9 @@ public class JunoDirectCheckoutPlugin implements FlutterPlugin, MethodCallHandle
     // in the same class.
     public static void registerWith(Registrar registrar) {
         final MethodChannel channel = new MethodChannel(registrar.messenger(), "juno_direct_checkout");
-        channel.setMethodCallHandler(new JunoDirectCheckoutPlugin(registrar.activity()));
+        channel.setMethodCallHandler(new JunoDirectCheckoutPlugin());
     }
+
 
     @Override
     public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
@@ -63,7 +68,7 @@ public class JunoDirectCheckoutPlugin implements FlutterPlugin, MethodCallHandle
                     prod = call.argument("prod");
                 }
                 InitializeDirectCheckoutListener initializeListener = new InitializeDirectCheckoutListener(result);
-                DirectCheckout.initialize(activity, prod, initializeListener);
+                DirectCheckout.initialize(context, prod, initializeListener);
                 break;
             case "getCardHash":
                 CodigoHashDirectCheckoutListener listener = new CodigoHashDirectCheckoutListener(result);
